@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url = "***"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Doc {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  content   String?
+  password  String?
+  owner     User?   @relation(fields: [ownerId], references: [id], name: "owner")
+  ownerId   Int?
+  collabers User[]  @relation(references: [id])
+  blacklist User[]  @relation("UserToDocBlacklist", references: [id])
+}
+
+model User {
+  id              Int     @id @default(autoincrement())
+  email           String  @unique
+  name            String?
+  password        String
+  docs            Doc[]   @relation("owner")
+  sharedDocs      Doc[]   @relation(references: [id])
+  blacklistedDocs Doc[]   @relation("UserToDocBlacklist", references: [id])
+}
